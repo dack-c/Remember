@@ -50,6 +50,7 @@
                     android:padding="0dp"
                     android:adjustViewBounds="true" />
                 <TextView
+                    android:id="@+id/alarm_card_location_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Location Text"
@@ -58,6 +59,7 @@
         </LinearLayout>
 
         <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/alarm_card_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />

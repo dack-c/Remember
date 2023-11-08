@@ -9,12 +9,12 @@ data class AlarmModel(
     val name:String,
     val hour:Int,
     val minute:Int,
-    val daysOfWeek:List<Boolean>?,
-    val latitude:Double?,
-    val longitude:Double?,
-    val radius:Double?,
-    val enterMode:Boolean?,
-    val volume:Double?
+    val daysOfWeek:List<Boolean>,
+    val latitude:Double,
+    val longitude:Double,
+    val radius:Double,
+    val enterMode:Boolean,
+    val volume:Double
     ): Parcelable
 
 /* <activity 간에 객체를 intent로 전달하는 방법>
