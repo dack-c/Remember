@@ -5,8 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AlarmModel(
-    val id:Int,
-    val name:String,
+    val id:Int, //알람 활성황/비활성화 시 필요
+    val name:String, //알람 울릴 때 필요
     val hour:Int,
     val minute:Int,
     val daysOfWeek:List<Boolean>,
@@ -14,7 +14,9 @@ data class AlarmModel(
     val longitude:Double,
     val radius:Double,
     val enterMode:Boolean,
-    val volume:Double
+    val volume:Double, //알람 울릴 때 필요
+    var isActive:Boolean, //초기: true
+    var alreadyAlarmed:Boolean //초기: false
     ): Parcelable
 
 /* <activity 간에 객체를 intent로 전달하는 방법>
