@@ -11,7 +11,7 @@ class DayOfWeekConverter {
 
     @TypeConverter
     fun jsonToList(value: String): List<Int>? {
-        return Gson().fromJson(value,Array<Int>::class.java)?.toList()
+        return Gson().fromJson(value, Array<Int>::class.java)?.toList()
     }
 }
 

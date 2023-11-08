@@ -51,11 +51,10 @@ dependencies {
     // To use Kotlin annotation processing tool (kapt)
     kapt("androidx.room:room-compiler:$room_version")
 
-
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
-
+    implementation("com.google.code.gson:gson:2.9.0")
 
     implementation("com.naver.maps:map-sdk:3.17.0")
     implementation("androidx.core:core-ktx:1.9.0")
@@ -63,10 +62,6 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.room:room-ktx:2.6.0")
-//    implementation("androidx.room:room-runtime:2.2.6")
-//    annotationProcessor("androidx.room:room-compiler:2.2.6")
-//    kapt("androidx.room:room-compiler:2.2.6")
-//    kapt("org.xerial:sqlite-jdbc:3.34.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

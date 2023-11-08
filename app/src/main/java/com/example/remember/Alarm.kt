@@ -10,7 +10,7 @@ data class Alarm (
     val name: String,
     val hour: Int,
     val minute: Int,
-//    val daysOfWeek: Array<Int>,
+    val daysOfWeek: List<Int>,
     val longitude: Double,
     val latitude: Double,
     val fireOnEscape: Boolean,

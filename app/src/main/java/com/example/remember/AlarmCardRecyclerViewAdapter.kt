@@ -15,7 +15,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 //    headerView!!
 //)
 
-class AlarmCardRecyclerViewAdapter(private val dataSet: Array<AlarmCard>) :
+class AlarmCardRecyclerViewAdapter(private val dataSet: MutableList<AlarmCard>) :
     RecyclerView.Adapter<AlarmCardRecyclerViewAdapter.ViewHolder>() {
 
     /**
