@@ -9,5 +9,6 @@ class NaverMapActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityNaverMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // first commit
     }
 }
