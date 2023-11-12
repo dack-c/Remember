@@ -1,8 +1,12 @@
 package com.example.remember
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
+
+@Parcelize
 @Entity
 data class Alarm (
     @PrimaryKey
@@ -14,5 +18,7 @@ data class Alarm (
     val longitude: Double,
     val latitude: Double,
     val fireOnEscape: Boolean,
-    val volume: Double
-)
+    val volume: Double,
+    val isActive: Boolean,
+    val alreadyFired: Boolean
+) : Parcelable

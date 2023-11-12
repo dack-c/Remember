@@ -1,16 +1,13 @@
 package com.example.remember
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.example.remember.databinding.ActivityMainBinding
-import kotlinx.coroutines.*
-import okhttp3.internal.toImmutableList
-import kotlin.reflect.typeOf
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,9 +24,16 @@ class MainActivity : AppCompatActivity() {
         db = AlarmDatabase.getInstance(applicationContext)
 
         setupRecyclerView()
-        loadAlarmCards()
+        loadAlarmCards {
+
+            runOnUiThread {
+                alarmRecyclerViewAdapter.notifyDataSetChanged()
+            }
+
+        }
 
         binding.addAlarmFab.setOnClickListener {
+
             addAlarm()
         }
 
@@ -42,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.addItemDecoration(VerticalSpaceItemDecoration(32))
     }
 
-    private fun loadAlarmCards() {
+    private fun loadAlarmCards(completionHandler: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch { // 다른애 한테 일 시키기
             val dao = db?.alarmDao() ?: return@launch
             val list = dao.getAll()
@@ -59,7 +63,9 @@ class MainActivity : AppCompatActivity() {
                 alarmCardDataSet.add(newAlarmCard)
             }
 
-            alarmRecyclerViewAdapter.notifyDataSetChanged()
+
+            completionHandler()
+
         }
     }
 
@@ -73,7 +79,9 @@ class MainActivity : AppCompatActivity() {
             fireOnEscape = true,
             longitude = 1.0,
             latitude = 1.0,
-            volume = 1.0
+            volume = 1.0,
+            isActive = true,
+            alreadyFired = true
         )
 
         val db = AlarmDatabase.getInstance(applicationContext)
