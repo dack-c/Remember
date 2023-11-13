@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Remember</string>
+    <string name="some_id">
+        디폴트 이름
+    </string>
+    <string name="label_text">
+                종료
+    </string>
 </resources>
