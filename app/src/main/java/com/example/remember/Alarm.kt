@@ -17,8 +17,9 @@ data class Alarm (
     val daysOfWeek: List<Int>,
     val longitude: Double,
     val latitude: Double,
+    val radius:Double,
     val fireOnEscape: Boolean,
     val volume: Double,
-    val isActive: Boolean,
-    val alreadyFired: Boolean
+    var isActive: Boolean,
+    var alreadyFired: Boolean
 ) : Parcelable
