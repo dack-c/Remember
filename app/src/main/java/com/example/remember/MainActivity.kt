@@ -24,20 +24,19 @@ class MainActivity : AppCompatActivity() {
         db = AlarmDatabase.getInstance(applicationContext)
 
         setupRecyclerView()
-        loadAlarmCards {
 
-            runOnUiThread {
-                alarmRecyclerViewAdapter.notifyDataSetChanged()
-            }
-
-        }
 
         binding.addAlarmFab.setOnClickListener {
-
             addAlarm()
         }
 
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        loadAlarmCards()
     }
 
     private fun setupRecyclerView() {
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.addItemDecoration(VerticalSpaceItemDecoration(32))
     }
 
-    private fun loadAlarmCards(completionHandler: () -> Unit) {
+    private fun loadAlarmCards() {
         CoroutineScope(Dispatchers.IO).launch { // 다른애 한테 일 시키기
             val dao = db?.alarmDao() ?: return@launch
             val list = dao.getAll()
@@ -64,14 +63,15 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            completionHandler()
+            runOnUiThread {
+                alarmRecyclerViewAdapter.notifyDataSetChanged()
+            }
 
         }
     }
 
     private fun addAlarm() {
         val newAlarm = Alarm(
-            id = 3,
             name = "alamr",
             hour = 1,
             minute = 1,
@@ -81,7 +81,8 @@ class MainActivity : AppCompatActivity() {
             latitude = 1.0,
             volume = 1.0,
             isActive = true,
-            alreadyFired = true
+            alreadyFired = true,
+            radius = 4.0
         )
 
         val db = AlarmDatabase.getInstance(applicationContext)
