@@ -17,6 +17,9 @@ class Manager {
     //멤버함수 호출방법: Manager.getInstance(this).멤버함수이름(매개변수)
 //    private val geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context)
     private lateinit var locationManager: LocationManager
+    private lateinit var alarmModels: MutableList<Alarm>
+    private lateinit var pendingIntent: PendingIntent
+    private lateinit var alarmManager: AlarmManager
     companion object {
         private var instance: Manager? = null
 
@@ -32,11 +35,17 @@ class Manager {
         }
     }
 
-    fun changeActivationState(alarmId: Int, isActive: Boolean) {
-
+    fun changeActivationState(alarmId: Int, isActive: Boolean) { //초기화면에서 알람 비활성화 버튼 클릭 시
+        for(alarmModel in alarmModels) {
+            if(alarmModel.id == alarmId) {
+                alarmModel.isActive = isActive
+                return
+            }
+        }
     }
 
-    fun setAlarm(alarmModel: AlarmModel) {
+    fun setAlarm(alarmModel: Alarm) {
+        alarmModels.add(alarmModel)
         locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         try {
             // 위치 업데이트 요청
@@ -48,19 +57,19 @@ class Manager {
         }
     }
 
-    private fun createLocationListener(alarmModel: AlarmModel): LocationListener {
+    private fun createLocationListener(alarmModel: Alarm): LocationListener {
         return object : LocationListener {
             override fun onLocationChanged(location: Location) { //주기마다 실행됨
-                val isLocationConditionSatisfied = when(alarmModel.enterMode) {
+                val isLocationConditionSatisfied = when(alarmModel.fireOnEscape) {
                     true -> isAtLocation(location, alarmModel)
                     false -> !isAtLocation(location, alarmModel)
                 }
-                if (alarmModel.isActive && !(alarmModel.alreadyAlarmed) && isLocationConditionSatisfied && isInTimeRange(alarmModel)) { // 알람 조건에 도달 했으면
-                    startAlarm() //알람 실행
-                    alarmModel.alreadyAlarmed = true //위치 조건 다시 불만족 될 때까지 알람 비활성화
+                if (alarmModel.isActive && !(alarmModel.alreadyFired) && isLocationConditionSatisfied && isInTimeRange(alarmModel)) { // 알람 조건에 도달 했으면
+                    startAlarm(alarmModel) //알람 실행
+                    alarmModel.alreadyFired = true //위치 조건 다시 불만족 될 때까지 알람 비활성화
                 }
-                else if (!isLocationConditionSatisfied && alarmModel.alreadyAlarmed) { //위치 조건 다시 만족->불만족 되면
-                    alarmModel.alreadyAlarmed = false //다시 만족할 때 알람 울리도록 설정
+                else if (!isLocationConditionSatisfied && alarmModel.alreadyFired) { //위치 조건 다시 만족->불만족 되면
+                    alarmModel.alreadyFired = false //다시 만족할 때 알람 울리도록 설정
                 }
             }
             override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
@@ -70,7 +79,7 @@ class Manager {
     }
 
     // 특정 위치 반경 안으로 들어왔는지 확인하는 메소드
-    private fun isAtLocation(location: Location, alarmModel: AlarmModel): Boolean {
+    private fun isAtLocation(location: Location, alarmModel: Alarm): Boolean {
         // 사용자의 위치와 특정 위치 사이의 거리 계산
         val distance = FloatArray(1)
         Location.distanceBetween(location.latitude, location.longitude, alarmModel.latitude, alarmModel.longitude, distance)
@@ -80,24 +89,22 @@ class Manager {
     }
 
     // 현재 시간이 설정한 시간과 1시간 차이인지 확인하는 메소드
-    private fun isInTimeRange(alarmModel: AlarmModel): Boolean {
-        for (dayOfWeek in alarmModel.daysOfWeek.indices) {
-            if (alarmModel.daysOfWeek[dayOfWeek]) {
-                val setCalendar = Calendar.getInstance().apply {
-                    timeInMillis = System.currentTimeMillis()
-                    set(Calendar.DAY_OF_WEEK, dayOfWeek)
-                    set(Calendar.HOUR_OF_DAY, alarmModel.hour)
-                    set(Calendar.MINUTE, alarmModel.minute)
-                }
+    private fun isInTimeRange(alarmModel: Alarm): Boolean {
+        for (dayOfWeek in alarmModel.daysOfWeek) {
+            val setCalendar = Calendar.getInstance().apply {
+                timeInMillis = System.currentTimeMillis()
+                set(Calendar.DAY_OF_WEEK, dayOfWeek)
+                set(Calendar.HOUR_OF_DAY, alarmModel.hour)
+                set(Calendar.MINUTE, alarmModel.minute)
+            }
 
-                val curCalendar = Calendar.getInstance()
+            val curCalendar = Calendar.getInstance()
 
-                // 두 Calendar 인스턴스의 차이가 1시간 이내인지 확인
-                val diff = abs(curCalendar.timeInMillis - setCalendar.timeInMillis)
-                val isWithinOneHour = diff <= 3600000L
-                if(isWithinOneHour) {
-                    return true
-                }
+            // 두 Calendar 인스턴스의 차이가 1시간 이내인지 확인
+            val diff = abs(curCalendar.timeInMillis - setCalendar.timeInMillis)
+            val isWithinOneHour = diff <= 3600000L
+            if(isWithinOneHour) {
+                return true
             }
         }
         return false
@@ -105,10 +112,13 @@ class Manager {
 
     // 알람을 실행하는 메소드
     @SuppressLint("ScheduleExactAlarm")
-    private fun startAlarm() {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private fun startAlarm(alarmModel: Alarm) {
+        alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        intent.putExtra("name", alarmModel.name)
+        intent.putExtra("volume", alarmModel.volume)
+        intent.putExtra("id", alarmModel.id)
+        pendingIntent = PendingIntent.getBroadcast(context, alarmModel.id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         // 알람 실행
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent)

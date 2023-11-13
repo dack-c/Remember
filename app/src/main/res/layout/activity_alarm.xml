@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <!-- Auto layout, variables, and unit scale are not yet supported -->
+    <TextView
+        android:id="@+id/alarm_name"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="94dp"
+        android:text="@string/some_id"
+        android:textAppearance="@style/some_id"
+        android:gravity="center_horizontal|top"
+        />
+    <LinearLayout
+        android:layout_marginTop="300dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <Button
+            android:id="@+id/stop_button"
+            android:layout_width="107dp"
+            android:layout_height="62dp"
+            android:background="@drawable/button"
+            android:text="종료"
+            android:textSize="20sp"/>
+    </LinearLayout>
+
+
+
+</LinearLayout>
