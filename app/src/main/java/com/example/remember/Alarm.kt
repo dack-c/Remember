@@ -23,4 +23,9 @@ data class Alarm (
 ) : Parcelable {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
+
+    val timeText: String
+        get() {
+            return String.format("%02d: %02d", hour, minute)
+        }
 }

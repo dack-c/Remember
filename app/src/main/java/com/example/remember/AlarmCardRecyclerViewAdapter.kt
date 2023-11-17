@@ -1,11 +1,17 @@
 package com.example.remember
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 //private const val TYPE_HEADER = 0
 //private const val TYPE_ITEM = 1
@@ -15,7 +21,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 //    headerView!!
 //)
 
-class AlarmCardRecyclerViewAdapter(private val dataSet: MutableList<AlarmCard>) :
+class AlarmCardRecyclerViewAdapter(private val dataSet: MutableList<Alarm>) :
     RecyclerView.Adapter<AlarmCardRecyclerViewAdapter.ViewHolder>() {
 
     /**
@@ -27,13 +33,17 @@ class AlarmCardRecyclerViewAdapter(private val dataSet: MutableList<AlarmCard>) 
         val timeTextView: TextView
         val locationTextView: TextView
         val switch: MaterialSwitch
+        val container: LinearLayout
+        val context: Context
 
         init {
             // Define click listener for the ViewHolder's View.
+            context = view.context
             nameTextView = view.findViewById(R.id.alarm_card_title)
             timeTextView = view.findViewById(R.id.alarm_card_time_text)
             locationTextView = view.findViewById(R.id.alarm_card_location_text)
             switch = view.findViewById(R.id.alarm_card_switch)
+            container = view.findViewById(R.id.alarm_card_container)
         }
     }
 
@@ -52,15 +62,35 @@ class AlarmCardRecyclerViewAdapter(private val dataSet: MutableList<AlarmCard>) 
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.nameTextView.text = dataSet[position].name
-        viewHolder.timeTextView.text = dataSet[position].timeText
-        viewHolder.locationTextView.text = dataSet[position].locationText
 
-        viewHolder.switch.isChecked = dataSet[position].isActivated
+        var alarm = dataSet[position]
+
+        viewHolder.nameTextView.text = alarm.name
+        viewHolder.timeTextView.text = alarm.timeText
+        viewHolder.locationTextView.text = "${alarm.latitude}"
+        viewHolder.switch.isChecked = alarm.isActive
+
+        viewHolder.container.setOnClickListener {
+            val intent = Intent(viewHolder.context, AlarmActivity::class.java)
+            intent.putExtra("alarm", alarm)
+            viewHolder.context.startActivity(intent)
+        }
+
+        viewHolder.switch.setOnCheckedChangeListener { button, isChecked ->
+            println(isChecked)
+            val updatedAlarm = alarm
+            alarm.isActive = isChecked
+
+            val db = AlarmDatabase.getInstance(viewHolder.context)
+            CoroutineScope(Dispatchers.IO).launch {
+                db!!.alarmDao().update(updatedAlarm)
+            }
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = dataSet.size
+
 
 
 }
