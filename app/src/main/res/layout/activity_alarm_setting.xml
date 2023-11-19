@@ -1,9 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AlarmSettingActivity">
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+   <androidx.appcompat.widget.Toolbar
+       android:id="@+id/toolbar"
+       android:layout_width="match_parent"
+       android:layout_height="?attr/actionBarSize" />
+
+   <!-- 시간을 설정하세요 -->
+   <LinearLayout
+       android:id="@+id/timeLayout"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       android:padding="18dp"
+       android:gravity="center_vertical">
+
+      <ImageView
+          android:layout_width="30dp"
+          android:layout_height="30dp"
+          android:src="@drawable/ic_clock"/>
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:paddingLeft="5dp"
+          android:text="시간을 설정하세요"
+          android:textSize="20sp"/>
+      <ImageButton
+          android:id="@+id/timeButton"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:background="@android:color/transparent"
+          android:src="@drawable/ic_angle" />
+
+   </LinearLayout>
+
+   <!-- 반복 요일 -->
+   <LinearLayout
+       android:id="@+id/repectedDays"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       android:padding="16dp">
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="반복 요일"
+          android:textSize="20sp"
+          android:textStyle="bold"/>
+
+      <LinearLayout
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:layout_weight="1"
+          android:id="@+id/showDays"
+          android:gravity="end">
+      </LinearLayout>
+   </LinearLayout>
+
+
+   <!-- 소리음향, 진동 설정 -->
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="horizontal"
+       android:padding="18dp">
+      <ImageView
+          android:layout_width="30dp"
+          android:layout_height="48dp"
+          android:src="@drawable/ic_volumn"/>
+      <SeekBar
+          android:id="@+id/volumeSeekbar"
+          android:layout_width="184dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:layout_marginTop="16dp" />
+      <ImageView
+          android:layout_width="35dp"
+          android:layout_height="48dp"
+          android:src="@drawable/ic_vibrate" />
+
+      <Switch
+          android:id="@+id/vibrate"
+          android:layout_width="10dp"
+          android:layout_height="50dp"
+          android:layout_weight="1"
+          />
+   </LinearLayout>
+
+   <!-- 위치 설정 -->
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical"
+
+       android:padding="16dp">
+      <LinearLayout
+          android:id="@+id/locationLayout"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal">
+         <!--       android:layout_below="@id/weekdaysLayout">-->
+
+         <ImageView
+             android:layout_width="35dp"
+             android:layout_height="48dp"
+             android:src="@drawable/ic_location"
+             android:paddingRight="10dp"/>
+
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="위치를 설정하세요"
+             android:textSize="20sp"
+             android:layout_gravity="center_vertical"/>
+
+         <ImageButton
+             android:id="@+id/locationBtn"
+             android:layout_width="50dp"
+             android:layout_height="50dp"
+             android:background="@android:color/transparent"
+             android:src="@drawable/ic_angle" />
+
+      </LinearLayout>
+      <LinearLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal">
+         <ToggleButton
+             android:id="@+id/leaveToggle"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:textOff="벗어날 때"
+             android:textOn="벗어날 때 선택"/>
+         <ToggleButton
+             android:id="@+id/arriveToggle"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:textOff="들어올 때"
+             android:textOn="들어올 때 선택"/>
+
+      </LinearLayout>
+
+   </LinearLayout>
+
+   <!-- 알람 이름 설정 -->
+   <EditText
+       android:id="@+id/name"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:hint="알람 이름을 입력하세요"
+       android:padding="16dp"
+       android:layout_below="@id/locationLayout"/>
+
+
+</LinearLayout>
