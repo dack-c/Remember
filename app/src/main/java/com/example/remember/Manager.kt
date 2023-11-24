@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import kotlin.math.abs
@@ -45,6 +46,9 @@ class Manager {
     }
 
     fun setAlarm(alarmModel: Alarm) {
+        if(!(::alarmModels.isInitialized)) {
+            alarmModels = mutableListOf<Alarm>();
+        }
         alarmModels.add(alarmModel)
         locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         try {
@@ -91,20 +95,15 @@ class Manager {
     // 현재 시간이 설정한 시간과 1시간 차이인지 확인하는 메소드
     private fun isInTimeRange(alarmModel: Alarm): Boolean {
         for (dayOfWeek in alarmModel.daysOfWeek) {
-            val setCalendar = Calendar.getInstance().apply {
-                timeInMillis = System.currentTimeMillis()
-                set(Calendar.DAY_OF_WEEK, dayOfWeek)
-                set(Calendar.HOUR_OF_DAY, alarmModel.hour)
-                set(Calendar.MINUTE, alarmModel.minute)
-            }
-
             val curCalendar = Calendar.getInstance()
 
-            // 두 Calendar 인스턴스의 차이가 1시간 이내인지 확인
-            val diff = abs(curCalendar.timeInMillis - setCalendar.timeInMillis)
-            val isWithinOneHour = diff <= 3600000L
-            if(isWithinOneHour) {
-                return true
+            if(dayOfWeek == curCalendar.get(Calendar.DAY_OF_WEEK)) { // 두 Calendar 인스턴스의 차이가 1시간 이내인지 확인
+                val curTime = curCalendar.get(Calendar.HOUR_OF_DAY)*60 + curCalendar.get(Calendar.MINUTE)
+                val setTime = alarmModel.hour*60 + alarmModel.minute
+                val diff = abs(curTime-setTime)
+                if(diff <= 60) {
+                    return true
+                }
             }
         }
         return false
@@ -118,29 +117,14 @@ class Manager {
         intent.putExtra("name", alarmModel.name)
         intent.putExtra("volume", alarmModel.volume)
         intent.putExtra("id", alarmModel.id)
-        pendingIntent = PendingIntent.getBroadcast(context, alarmModel.id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            PendingIntent.getBroadcast(context, alarmModel.id, intent, PendingIntent.FLAG_MUTABLE)
+        }else{
+            PendingIntent.getBroadcast(context, alarmModel.id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+        Log.d("kkang", "start pendingIntent: ${pendingIntent.hashCode()}")
 
         // 알람 실행
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent)
     }
-
-//    fun setAlarm(alarmModel: AlarmModel) {
-//        // 알람 시간 설정
-//        val calendar = Calendar.getInstance().apply {
-//            timeInMillis = System.currentTimeMillis()
-//            set(Calendar.HOUR_OF_DAY, alarmModel.hour)
-//            set(Calendar.MINUTE, alarmModel.minute)
-//        }
-//
-//        // 알람 인텐트 생성
-//        val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
-//            intent.putExtra("ALARM_ID", alarmModel.id)
-//            PendingIntent.getBroadcast(context, alarmModel.id, intent, 0)
-//        }
-//
-//        // 알람 매니저에 알람 설정
-//        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmIntent)
-//    }
-
 }

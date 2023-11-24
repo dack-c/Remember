@@ -1,13 +1,22 @@
 package com.example.remember
 
+import android.app.AlarmManager
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.remember.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import android.provider.Settings
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +37,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.addAlarmFab.setOnClickListener {
             addAlarm()
+            //테스트 용
+//            val intent = Intent(this, AlarmSettingActivity::class.java)
+//            startActivity(intent)
         }
 
 
@@ -72,18 +84,30 @@ class MainActivity : AppCompatActivity() {
 
     private fun addAlarm() {
         val newAlarm = Alarm(
-            name = "alamr",
-            hour = 1,
-            minute = 1,
-                daysOfWeek = listOf(1,2),
+            name = "일어나7777!!",
+            hour = 0,
+            minute = 50,
+                daysOfWeek = listOf(1,2,5,6),
             fireOnEscape = true,
-            longitude = 1.0,
-            latitude = 1.0,
+            longitude = 128.6092,
+            latitude = 35.8869,
             volume = 1.0,
             isActive = true,
-            alreadyFired = true,
-            radius = 4.0
+            alreadyFired = false,
+            radius = 5.0
         )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { //알람 권한 허용 됬는지 확인
+            val alarmManager = ContextCompat.getSystemService(this, AlarmManager::class.java)
+            if (alarmManager?.canScheduleExactAlarms() == false) {
+                Intent().also { intent ->
+                    intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                    this.startActivity(intent)
+                }
+            }
+        }
+
+        Manager.getInstance(this).setAlarm(newAlarm)
 
         val db = AlarmDatabase.getInstance(applicationContext)
         CoroutineScope(Dispatchers.IO).launch {
