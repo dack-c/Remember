@@ -16,6 +16,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.provider.Settings
+import android.util.Log
+import android.Manifest
+import androidx.annotation.RequiresApi
 
 
 class MainActivity : AppCompatActivity() {
@@ -25,6 +28,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var db: AlarmDatabase? = null
 
+    private val MY_PERMISSIONS_REQ_ACCESS_FINE_LOCATION = 100
+    private val MY_PERMISSIONS_REQ_ACCESS_BACKGROUND_LOCATION = 101
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -33,6 +39,18 @@ class MainActivity : AppCompatActivity() {
         db = AlarmDatabase.getInstance(applicationContext)
 
         setupRecyclerView()
+
+        checkPermission()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { //알람 권한 허용 됬는지 확인
+            val alarmManager = ContextCompat.getSystemService(this, AlarmManager::class.java)
+            if (alarmManager?.canScheduleExactAlarms() == false) {
+                Intent().also { intent ->
+                    intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                    this.startActivity(intent)
+                }
+            }
+        }
 
 
         binding.addAlarmFab.setOnClickListener {
@@ -85,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     private fun addAlarm() {
         val newAlarm = Alarm(
             name = "일어나7777!!",
-            hour = 0,
+            hour = 17,
             minute = 50,
                 daysOfWeek = listOf(1,2,5,6),
             fireOnEscape = true,
@@ -94,18 +112,8 @@ class MainActivity : AppCompatActivity() {
             volume = 1.0,
             isActive = true,
             alreadyFired = false,
-            radius = 5.0
+            radius = 500.0
         )
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { //알람 권한 허용 됬는지 확인
-            val alarmManager = ContextCompat.getSystemService(this, AlarmManager::class.java)
-            if (alarmManager?.canScheduleExactAlarms() == false) {
-                Intent().also { intent ->
-                    intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-                    this.startActivity(intent)
-                }
-            }
-        }
 
         Manager.getInstance(this).setAlarm(newAlarm)
 
@@ -115,6 +123,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        checkPermission()
+    }
 
+
+    private fun checkPermission() {
+        val permissionAccessFineLocationApproved = ActivityCompat
+            .checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+        if (permissionAccessFineLocationApproved) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val backgroundLocationPermissionApproved = ActivityCompat
+                    .checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED
+
+                if (!backgroundLocationPermissionApproved) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                        MY_PERMISSIONS_REQ_ACCESS_BACKGROUND_LOCATION
+                    )
+                }
+            }
+        } else {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                MY_PERMISSIONS_REQ_ACCESS_FINE_LOCATION
+            )
+        }
+    }
 
 }

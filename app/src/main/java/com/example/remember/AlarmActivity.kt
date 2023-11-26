@@ -50,7 +50,7 @@ class AlarmActivity : AppCompatActivity() {
             mediaPlayer.stop()
         }
         mediaPlayer.release()
-        this.cancelAlarm()
+//        this.cancelAlarm()
     }
 
     fun cancelAlarm() {
