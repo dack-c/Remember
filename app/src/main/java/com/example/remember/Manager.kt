@@ -13,8 +13,20 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationServices
 import android.widget.Toast
+import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkerParameters
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.location.CurrentLocationRequest
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
+import java.util.concurrent.TimeUnit
 
 class Manager {
     //멤버함수 호출방법: Manager.getInstance(this).멤버함수이름(매개변수)
@@ -35,6 +47,12 @@ class Manager {
                 }
             }
         }
+    }
+
+    fun doUpdateGpsWorkWithPeriodic() { //백그라운드 위치 업데이트 시작
+        Log.d("CheckGpsWorker", "worker 시작함수 진입")
+        val workRequest = PeriodicWorkRequestBuilder<UpdateGpsWorker>(15, TimeUnit.MINUTES).build() //15문마다 위치 업데이트
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork("checkGps", ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, workRequest)
     }
 
     fun changeActivationState(alarmId: Int, isActive: Boolean) { //초기화면에서 알람 비활성화 버튼 클릭 시

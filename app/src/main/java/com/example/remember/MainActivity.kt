@@ -18,6 +18,9 @@ import kotlinx.coroutines.launch
 import android.provider.Settings
 import android.util.Log
 import android.Manifest
+import android.content.ComponentName
+import android.content.ServiceConnection
+import android.os.IBinder
 import androidx.annotation.RequiresApi
 
 
@@ -30,6 +33,22 @@ class MainActivity : AppCompatActivity() {
 
     private val MY_PERMISSIONS_REQ_ACCESS_FINE_LOCATION = 100
     private val MY_PERMISSIONS_REQ_ACCESS_BACKGROUND_LOCATION = 101
+
+//    private var mService: LocationUpdatesService? = null
+//    private var mBound = false
+//
+//    private var mServiceConnection = object : ServiceConnection {
+//        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+//            val binder = service as LocationUpdatesService.LocalBinder
+//            mService = binder.getService()
+//            mBound = true
+//        }
+//
+//        override fun onServiceDisconnected(name: ComponentName?) {
+//            mService = null
+//            mBound = false
+//        }
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,9 +122,9 @@ class MainActivity : AppCompatActivity() {
     private fun addAlarm() {
         val newAlarm = Alarm(
             name = "일어나7777!!",
-            hour = 17,
+            hour = 18,
             minute = 50,
-                daysOfWeek = listOf(1,2,5,6),
+                daysOfWeek = listOf(1,2,3,4,5,6,7),
             fireOnEscape = true,
             longitude = 128.6092,
             latitude = 35.8869,
@@ -146,7 +165,11 @@ class MainActivity : AppCompatActivity() {
                         arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
                         MY_PERMISSIONS_REQ_ACCESS_BACKGROUND_LOCATION
                     )
+                } else {
+                    Manager.getInstance(this).doUpdateGpsWorkWithPeriodic()//백그라운드 위치 업데이트 시작
                 }
+            } else {
+                Manager.getInstance(this).doUpdateGpsWorkWithPeriodic()//백그라운드 위치 업데이트 시작
             }
         } else {
             ActivityCompat.requestPermissions(this,
@@ -155,5 +178,11 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
+
+//    private fun bindAndStartService() {
+//        bindService(Intent(this, LocationUpdatesService::class.java), mServiceConnection,
+//            BIND_AUTO_CREATE)
+//        mService!!.requestLocationUpdates()
+//    }
 
 }
