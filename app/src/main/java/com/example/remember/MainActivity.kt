@@ -34,22 +34,6 @@ class MainActivity : AppCompatActivity() {
     private val MY_PERMISSIONS_REQ_ACCESS_FINE_LOCATION = 100
     private val MY_PERMISSIONS_REQ_ACCESS_BACKGROUND_LOCATION = 101
 
-//    private var mService: LocationUpdatesService? = null
-//    private var mBound = false
-//
-//    private var mServiceConnection = object : ServiceConnection {
-//        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-//            val binder = service as LocationUpdatesService.LocalBinder
-//            mService = binder.getService()
-//            mBound = true
-//        }
-//
-//        override fun onServiceDisconnected(name: ComponentName?) {
-//            mService = null
-//            mBound = false
-//        }
-//    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -122,7 +106,7 @@ class MainActivity : AppCompatActivity() {
     private fun addAlarm() {
         val newAlarm = Alarm(
             name = "일어나7777!!",
-            hour = 18,
+            hour = 20,
             minute = 50,
                 daysOfWeek = listOf(1,2,3,4,5,6,7),
             fireOnEscape = true,
@@ -178,11 +162,5 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
-
-//    private fun bindAndStartService() {
-//        bindService(Intent(this, LocationUpdatesService::class.java), mServiceConnection,
-//            BIND_AUTO_CREATE)
-//        mService!!.requestLocationUpdates()
-//    }
 
 }

@@ -51,7 +51,7 @@ class Manager {
 
     fun doUpdateGpsWorkWithPeriodic() { //백그라운드 위치 업데이트 시작
         Log.d("CheckGpsWorker", "worker 시작함수 진입")
-        val workRequest = PeriodicWorkRequestBuilder<UpdateGpsWorker>(15, TimeUnit.MINUTES).build() //15문마다 위치 업데이트
+        val workRequest = PeriodicWorkRequestBuilder<UpdateGpsWorker>(15, TimeUnit.MINUTES).build() //15문마다 work 재시작
         WorkManager.getInstance(context).enqueueUniquePeriodicWork("checkGps", ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, workRequest)
     }
 

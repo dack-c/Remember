@@ -2,12 +2,17 @@ package com.example.remember
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.HandlerThread
+import android.os.Looper
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationToken
@@ -28,20 +33,13 @@ class UpdateGpsWorker(context: Context, params: WorkerParameters) : CoroutineWor
 
     override suspend fun doWork(): Result {
         try {
-            mFusedLocationClient.getCurrentLocation(
-                createCurrentLocationRequest(Long.MAX_VALUE, 0L),
-                createCancellationToken()
-            ).addOnCompleteListener {task ->
-                if(task.isSuccessful) {
-                    task.result?.let { aLocation ->
-                        val fromLat = aLocation.latitude
-                        val fromLng = aLocation.longitude
-                        Log.d(TAG, "task성공, 위도: $fromLat, 경도: $fromLng")
-                    }
-                } else {
-                    Log.e(TAG, "task 실패")
-                }
-            }
+            val handlerThread = HandlerThread(TAG)
+            handlerThread.start()
+            mFusedLocationClient.requestLocationUpdates(
+                createLocationRequest(),
+                createLocationCallback(),
+                handlerThread.looper
+            )
         } catch (err: ApiException) {
             Log.e(TAG, err.toString())
             Result.failure()
@@ -49,17 +47,22 @@ class UpdateGpsWorker(context: Context, params: WorkerParameters) : CoroutineWor
         return Result.success()
     }
 
-    private fun createCancellationToken(): CancellationToken =
-        object : CancellationToken() {
-            override fun onCanceledRequested(p0: OnTokenCanceledListener):
-                    CancellationToken = CancellationTokenSource().token
-            override fun isCancellationRequested(): Boolean = false
-        }
-
-    private fun createCurrentLocationRequest(limitTimeMills: Long, cachingExpiresInMills: Long): CurrentLocationRequest =
-        CurrentLocationRequest.Builder()
-            .setDurationMillis(limitTimeMills)
-            .setMaxUpdateAgeMillis(cachingExpiresInMills)
-            .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+    private fun createLocationRequest(): LocationRequest {
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
+            .setIntervalMillis(10000)
+            .setMinUpdateIntervalMillis(5000)
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
             .build()
+        return locationRequest
+    }
+
+    private  fun createLocationCallback(): LocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            super.onLocationResult(locationResult)
+            locationResult ?: return
+            for (location in locationResult.locations){
+                Log.i(TAG, "New location $location")
+            }
+        }
+    }
 }
