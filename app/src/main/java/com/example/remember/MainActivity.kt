@@ -104,27 +104,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addAlarm() {
-        val newAlarm = Alarm(
-            name = "일어나7777!!",
-            hour = 20,
-            minute = 50,
-            daysOfWeek = listOf(1,2,3,4,5,6,7),
-            fireOnEscape = true,
-            longitude = 128.6092,
-            latitude = 35.8869,
-            volume = 1.0,
-            isActive = true,
-            alreadyFired = false,
-            radius = 500.0
-        )
-
-        Manager.getInstance(this).setAlarm(newAlarm)
-
-        val db = AlarmDatabase.getInstance(applicationContext)
-        CoroutineScope(Dispatchers.IO).launch {
-            db!!.alarmDao().insert(newAlarm)
-        }
-
+//        val newAlarm = Alarm(
+//            name = "일어나7777!!",
+//            hour = 20,
+//            minute = 50,
+//            daysOfWeek = listOf(1,2,3,4,5,6,7),
+//            fireOnEscape = true,
+//            longitude = 128.6092,
+//            latitude = 35.8869,
+//            volume = 1.0,
+//            isActive = true,
+//            alreadyFired = false,
+//            radius = 500.0
+//        )
+//
+//        Manager.getInstance(this).setAlarm(newAlarm)
+//
+//        val db = AlarmDatabase.getInstance(applicationContext)
+//        CoroutineScope(Dispatchers.IO).launch {
+//            db!!.alarmDao().insert(newAlarm)
+//        }
+        val intent = Intent(this, AlarmSettingActivity::class.java)
+        startActivity(intent)
 
 
     }
