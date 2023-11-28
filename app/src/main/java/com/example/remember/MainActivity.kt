@@ -1,7 +1,9 @@
 package com.example.remember
 
-import android.app.AlarmManager
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.app.AlarmManager
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -26,8 +28,8 @@ import androidx.annotation.RequiresApi
 
 class MainActivity : AppCompatActivity() {
 
-    private var alarmCardDataSet = mutableListOf<AlarmCard>()
-    private val alarmRecyclerViewAdapter = AlarmCardRecyclerViewAdapter(alarmCardDataSet)
+    private var alarmDataSet = mutableListOf<Alarm>()
+    private val alarmRecyclerViewAdapter = AlarmCardRecyclerViewAdapter(alarmDataSet)
     private lateinit var binding: ActivityMainBinding
     private var db: AlarmDatabase? = null
 
@@ -66,10 +68,16 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onStart() {
-        super.onStart()
-
+    override fun onResume() {
+        super.onResume()
         loadAlarmCards()
+    }
+
+    inner class AlarmUpdateReceiver(): BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            binding.noAlarmText.text = "알람을 추가해보세요"
+        }
+
     }
 
     private fun setupRecyclerView() {
@@ -83,18 +91,10 @@ class MainActivity : AppCompatActivity() {
             val dao = db?.alarmDao() ?: return@launch
             val list = dao.getAll()
 
-            alarmCardDataSet.clear()
+            alarmDataSet.clear()
             list.forEach { alarm ->
-                val newAlarmCard = AlarmCard(
-                    id = alarm.id,
-                    name = alarm.name,
-                    locationText = "${alarm.latitude}, ${alarm.longitude}",
-                    timeText = "${alarm.hour}:${alarm.minute}",
-                    isActivated = true,
-                )
-                alarmCardDataSet.add(newAlarmCard)
+                alarmDataSet.add(alarm)
             }
-
 
             runOnUiThread {
                 alarmRecyclerViewAdapter.notifyDataSetChanged()
@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
             name = "일어나7777!!",
             hour = 20,
             minute = 50,
-                daysOfWeek = listOf(1,2,3,4,5,6,7),
+            daysOfWeek = listOf(1,2,3,4,5,6,7),
             fireOnEscape = true,
             longitude = 128.6092,
             latitude = 35.8869,
@@ -124,6 +124,9 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             db!!.alarmDao().insert(newAlarm)
         }
+
+
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
