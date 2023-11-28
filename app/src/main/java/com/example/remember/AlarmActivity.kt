@@ -10,6 +10,7 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.example.remember.databinding.ActivityAlarmBinding
 
 class AlarmActivity : AppCompatActivity() {
@@ -49,7 +50,7 @@ class AlarmActivity : AppCompatActivity() {
             mediaPlayer.stop()
         }
         mediaPlayer.release()
-        this.cancelAlarm()
+//        this.cancelAlarm()
     }
 
     fun cancelAlarm() {
@@ -58,11 +59,13 @@ class AlarmActivity : AppCompatActivity() {
         val intent = Intent(this, AlarmReceiver::class.java)
 
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
-            PendingIntent.getBroadcast(this,alarmCode,intent,PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getBroadcast(this,alarmCode,intent,PendingIntent.FLAG_MUTABLE)
         }else{
             PendingIntent.getBroadcast(this,alarmCode,intent,PendingIntent.FLAG_UPDATE_CURRENT)
         }
+        Log.d("kkang", "cencel pendingIntent: ${pendingIntent.hashCode()}")
 
         alarmManager.cancel(pendingIntent)
+        pendingIntent.cancel()
     }
 }
