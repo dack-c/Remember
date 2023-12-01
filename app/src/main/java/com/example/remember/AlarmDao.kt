@@ -1,5 +1,6 @@
 package com.example.remember
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
@@ -14,5 +15,5 @@ interface AlarmDao {
     fun delete(alarm: Alarm)
 
     @Query("SELECT * FROM Alarm")
-    fun getAll(): List<Alarm>
+    fun getAll(): LiveData<List<Alarm>>
 }
