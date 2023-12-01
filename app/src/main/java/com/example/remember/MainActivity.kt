@@ -3,14 +3,28 @@ package com.example.remember
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.app.AlarmManager
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.remember.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import android.provider.Settings
+import android.util.Log
+import android.Manifest
+import android.content.ComponentName
+import android.content.ServiceConnection
+import android.os.IBinder
+import androidx.annotation.RequiresApi
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,6 +32,9 @@ class MainActivity : AppCompatActivity() {
     private val alarmRecyclerViewAdapter = AlarmCardRecyclerViewAdapter(alarmDataSet)
     private lateinit var binding: ActivityMainBinding
     private var db: AlarmDatabase? = null
+
+    private val MY_PERMISSIONS_REQ_ACCESS_FINE_LOCATION = 100
+    private val MY_PERMISSIONS_REQ_ACCESS_BACKGROUND_LOCATION = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +48,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.addAlarmFab.setOnClickListener {
             addAlarm()
+            //테스트 용
+//            val intent = Intent(this, AlarmSettingActivity::class.java)
+//            startActivity(intent)
         }
 
 
@@ -90,13 +110,15 @@ class MainActivity : AppCompatActivity() {
             minute = 1,
             daysOfWeek = listOf(1, 2),
             fireOnEscape = true,
-            longitude = 1.0,
-            latitude = 1.0,
+            longitude = 128.6092,
+            latitude = 35.8869,
             volume = 1.0,
             isActive = true,
-            alreadyFired = true,
-            radius = 4.0
+            alreadyFired = false,
+            radius = 500.0
         )
+
+        Manager.getInstance(this).setAlarm(newAlarm)
 
         val db = AlarmDatabase.getInstance(applicationContext)
         CoroutineScope(Dispatchers.IO).launch {
@@ -106,5 +128,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        checkPermission()
+    }
 
 }
