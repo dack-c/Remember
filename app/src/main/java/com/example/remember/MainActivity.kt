@@ -46,28 +46,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadAlarmCards() {
+
         CoroutineScope(Dispatchers.IO).launch { // 다른애 한테 일 시키기
             val dao = db?.alarmDao() ?: return@launch
             val list = dao.getAll()
 
             alarmCardDataSet.clear()
-            list.forEach { alarm ->
-                val newAlarmCard = AlarmCard(
-                    id = alarm.id,
-                    name = alarm.name,
-                    locationText = "${alarm.latitude}, ${alarm.longitude}",
-                    timeText = "${alarm.hour}:${alarm.minute}",
-                    isActivated = true,
-                )
-                alarmCardDataSet.add(newAlarmCard)
-            }
 
 
             runOnUiThread {
-                alarmRecyclerViewAdapter.notifyDataSetChanged()
+                list.observe(this@MainActivity) { alarmList ->
+                    alarmList.forEach { alarm ->
+                        val newAlarmCard = AlarmCard(
+                            id = alarm.id,
+                            name = alarm.name,
+                            locationText = "${alarm.latitude}, ${alarm.longitude}",
+                            timeText = "${alarm.hour}:${alarm.minute}",
+                            isActivated = true,
+                        )
+                        alarmCardDataSet.add(newAlarmCard)
+                    }
+
+//                runOnUiThread {
+                    alarmRecyclerViewAdapter.notifyDataSetChanged()
+//                }
+
+
+                }
             }
 
-        }
+
+
+        } // CoroutineScope
+
+
     }
 
     private fun addAlarm() {
@@ -75,7 +87,7 @@ class MainActivity : AppCompatActivity() {
             name = "alamr",
             hour = 1,
             minute = 1,
-                daysOfWeek = listOf(1,2),
+            daysOfWeek = listOf(1,2),
             fireOnEscape = true,
             longitude = 1.0,
             latitude = 1.0,
