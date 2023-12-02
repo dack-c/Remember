@@ -81,7 +81,8 @@ class MainActivity : AppCompatActivity() {
             latitude = 1.0,
             volume = 1.0,
             isActive = true,
-            alreadyFired = true
+            alreadyFired = true,
+            radius = 4.0
         )
 
         val db = AlarmDatabase.getInstance(applicationContext)

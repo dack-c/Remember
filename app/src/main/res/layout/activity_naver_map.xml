@@ -8,8 +8,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
+        android:layout_height="?attr/actionBarSize"/>
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map_fragment"
         android:layout_width="match_parent"
