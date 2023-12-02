@@ -18,7 +18,7 @@ abstract class AlarmDatabase: RoomDatabase() {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
                         AlarmDatabase::class.java,
-                        "user-database"
+                        "alarm-database"
                     ).build()
                 }
             }

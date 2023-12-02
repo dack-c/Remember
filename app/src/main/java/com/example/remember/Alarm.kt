@@ -9,8 +9,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Entity
 data class Alarm (
-    @PrimaryKey
-    val id: Int,
     val name: String,
     val hour: Int,
     val minute: Int,
@@ -22,4 +20,12 @@ data class Alarm (
     val volume: Double,
     var isActive: Boolean,
     var alreadyFired: Boolean
-) : Parcelable
+) : Parcelable {
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
+
+    val timeText: String
+        get() {
+            return String.format("%02d: %02d", hour, minute)
+        }
+}
