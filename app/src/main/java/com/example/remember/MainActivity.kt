@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         db = AlarmDatabase.getInstance(applicationContext)
 
         setupRecyclerView()
-        loadAlarmCards()
+
 
         binding.addAlarmFab.setOnClickListener {
             addAlarm()
@@ -54,6 +54,11 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadAlarmCards()
     }
 
     inner class AlarmUpdateReceiver() : BroadcastReceiver() {
@@ -72,34 +77,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadAlarmCards() {
         CoroutineScope(Dispatchers.IO).launch { // 다른애 한테 일 시키기
-            val dao = db?.alarmDao() ?: return@launch
+//            val dao = AlarmDatabase.getDao(db!!) ?: return@launch
+            val dao = db!!.alarmDao()
             val list = dao.getAll()
 
             runOnUiThread {
-
                 list.observe(this@MainActivity) { alarmList ->
                     alarmDataSet.clear()
                     alarmList.forEach { alarm ->
-                        val newAlarm = Alarm(
-                            name = alarm.name,
-                            hour = alarm.hour,
-                            minute = alarm.minute,
-                            daysOfWeek = alarm.daysOfWeek,
-                            fireOnEscape = alarm.fireOnEscape,
-                            longitude = alarm.longitude,
-                            latitude = alarm.latitude,
-                            volume = alarm.volume,
-                            isActive = alarm.isActive,
-                            alreadyFired = alarm.alreadyFired,
-                            radius = alarm.radius
-                        )
-                        alarmDataSet.add(newAlarm)
+                        alarmDataSet.add(alarm)
                     }
                     alarmRecyclerViewAdapter.notifyDataSetChanged()
                 } // list.observe End
 
-
             } // runOnUiThread End
+
+
         } // CoroutineScope End
     }
 
