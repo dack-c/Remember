@@ -104,9 +104,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addAlarm() {
-<<<<<<< HEAD
         val newAlarm = Alarm(
-            id = 3,
+            //id = 3,
             name = "alamr",
             hour = 1,
             minute = 1,
@@ -119,7 +118,6 @@ class MainActivity : AppCompatActivity() {
             alreadyFired = true,
             radius = 4.0
         )
-=======
 //        val newAlarm = Alarm(
 //            name = "일어나7777!!",
 //            hour = 20,
@@ -142,7 +140,6 @@ class MainActivity : AppCompatActivity() {
 //        }
         val intent = Intent(this, AlarmSettingActivity::class.java)
         startActivity(intent)
->>>>>>> 11bf2ed7592946e78bdcd63193405c98a51e1442
 
 
     }
