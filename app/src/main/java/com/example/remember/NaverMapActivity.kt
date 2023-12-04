@@ -104,7 +104,7 @@ class NaverMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     // 위도와 경도를 한글로 변환하는 함수
-    /*private fun getKoreanAddress(latitude: Double, longitude: Double): String {
+    private fun getKoreanAddress(latitude: Double, longitude: Double): String {
         val geocoder = Geocoder(this, Locale.KOREA)
         val addresses = geocoder.getFromLocation(latitude, longitude, 1)
         return if (addresses?.isNotEmpty() == true && addresses[0].getAddressLine(0) != null) {
@@ -112,23 +112,34 @@ class NaverMapActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             "주소를 찾을 수 없습니다."
         }
-    }*/
+    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_done -> {
                 if (selectedCoord != null) {
-                    //val koreanAddress = getKoreanAddress(selectedCoord!!.latitude, selectedCoord!!.longitude)
+                    val koreanAddress = getKoreanAddress(selectedCoord!!.latitude, selectedCoord!!.longitude)
                     // 클릭한 위치의 위도와 경도를 담은 Intent 생성
                     val intent = Intent(this, AlarmSettingActivity::class.java)
-                    intent.putExtra("latitude", selectedCoord!!.latitude)
-                    intent.putExtra("longitude", selectedCoord!!.longitude)
+                    //intent.putExtra("latitude", selectedCoord!!.latitude)
+                    //intent.putExtra("longitude", selectedCoord!!.longitude)
+                    val extras = Bundle()
+
+                    // 번들에 위도, 경도 정보 추가
+                    selectedCoord?.let {
+                        extras.putDouble("latitude", it.latitude)
+                        extras.putDouble("longitude", it.longitude)
+                    }
                     //intent.putExtra("koreanAddress", koreanAddress)
-                    intent.putExtra("radius", radius)
+                    //intent.putExtra("radius", radius)
+                    extras.putString("koreanAddress", koreanAddress)
+                    extras.putDouble("radius", radius)
+
+                    intent.putExtras(extras)
 
                     //intent전달 확인용도
                     val latitude = selectedCoord!!.latitude
                     val longitude = selectedCoord!!.longitude
-                    val message = "위도: $latitude, 경도: $longitude, 반경: $radius"
+                    val message = "위도: $latitude, 경도: $longitude, 반경: $radius, 위치: $koreanAddress"
                     //val message = "위치: $koreanAddress, 반경: $radius"
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
