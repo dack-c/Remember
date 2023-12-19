@@ -19,7 +19,8 @@ data class Alarm (
     val fireOnEscape: Boolean,
     val volume: Double,
     var isActive: Boolean,
-    var alreadyFired: Boolean
+    var alreadyFired: Boolean,
+    var koreanAddress: String
 ) : Parcelable {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

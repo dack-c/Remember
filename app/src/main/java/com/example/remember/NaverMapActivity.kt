@@ -1,6 +1,8 @@
 package com.example.remember
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -67,6 +69,7 @@ class NaverMapActivity : AppCompatActivity(), OnMapReadyCallback {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             naverMap.locationSource = object : LocationSource {
+                @SuppressLint("MissingPermission")
                 override fun activate(listener: LocationSource.OnLocationChangedListener) {
                     fusedLocationClient.lastLocation
                         .addOnSuccessListener { location ->
@@ -119,7 +122,8 @@ class NaverMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (selectedCoord != null) {
                     val koreanAddress = getKoreanAddress(selectedCoord!!.latitude, selectedCoord!!.longitude)
                     // 클릭한 위치의 위도와 경도를 담은 Intent 생성
-                    val intent = Intent(this, AlarmSettingActivity::class.java)
+                    //val intent = Intent(this, AlarmSettingActivity::class.java)
+                    val intent = Intent()
                     //intent.putExtra("latitude", selectedCoord!!.latitude)
                     //intent.putExtra("longitude", selectedCoord!!.longitude)
                     val extras = Bundle()
@@ -144,7 +148,9 @@ class NaverMapActivity : AppCompatActivity(), OnMapReadyCallback {
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
                     // AlarmSettingActivity로 Intent 전달
-                    startActivity(intent)
+                    //startActivity(intent)
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
                     return true
                 } else {
                     Toast.makeText(this, "위치를 선택하세요.", Toast.LENGTH_SHORT).show()
@@ -152,8 +158,10 @@ class NaverMapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             android.R.id.home -> {
                 // 뒤로 가기 버튼 클릭 시 처리할 내용
-                val intent = Intent(this, AlarmSettingActivity::class.java)
-                startActivity(intent)
+//                val intent = Intent(this, AlarmSettingActivity::class.java)
+//                startActivity(intent)
+                setResult(Activity.RESULT_CANCELED)
+                finish()
                 return true
             }
         }

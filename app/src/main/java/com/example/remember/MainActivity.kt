@@ -45,6 +45,17 @@ class MainActivity : AppCompatActivity() {
 
         setupRecyclerView()
 
+        checkPermission()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { //알람 권한 허용 됬는지 확인
+            val alarmManager = ContextCompat.getSystemService(this, AlarmManager::class.java)
+            if (alarmManager?.canScheduleExactAlarms() == false) {
+                Intent().also { intent ->
+                    intent.action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                    this.startActivity(intent)
+                }
+            }
+        }
 
         binding.addAlarmFab.setOnClickListener {
             addAlarm()
@@ -97,31 +108,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addAlarm() {
-        val newAlarm = Alarm(
-            name = "alamr",
-            hour = 1,
-            minute = 1,
-            daysOfWeek = listOf(1, 2),
-            fireOnEscape = true,
-            longitude = 1.0,
-            latitude = 1.0,
-            volume = 1.0,
-            isActive = true,
-            alreadyFired = true,
-            radius = 4.0
-        )
 //        val newAlarm = Alarm(
-//            name = "일어나7777!!",
-//            hour = 20,
-//            minute = 50,
-//            daysOfWeek = listOf(1,2,3,4,5,6,7),
+//            name = "alamr",
+//            hour = 1,
+//            minute = 1,
+//            daysOfWeek = listOf(1, 2),
 //            fireOnEscape = true,
 //            longitude = 128.6092,
 //            latitude = 35.8869,
 //            volume = 1.0,
 //            isActive = true,
 //            alreadyFired = false,
-//            radius = 500.0
+//            radius = 500.0,
+//            koreanAddress = "dd"
 //        )
 //
 //        Manager.getInstance(this).setAlarm(newAlarm)
@@ -138,7 +137,37 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        checkPermission()
+        checkPermission()
+    }
+
+    private fun checkPermission() {
+        val permissionAccessFineLocationApproved = ActivityCompat
+            .checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+        if (permissionAccessFineLocationApproved) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val backgroundLocationPermissionApproved = ActivityCompat
+                    .checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED
+
+                if (!backgroundLocationPermissionApproved) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                        MY_PERMISSIONS_REQ_ACCESS_BACKGROUND_LOCATION
+                    )
+                } else {
+                    Manager.getInstance(this).doUpdateGpsWorkWithPeriodic()//백그라운드 위치 업데이트 시작
+                }
+            } else {
+                Manager.getInstance(this).doUpdateGpsWorkWithPeriodic()//백그라운드 위치 업데이트 시작
+            }
+        } else {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                MY_PERMISSIONS_REQ_ACCESS_FINE_LOCATION
+            )
+        }
     }
 
 }

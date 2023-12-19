@@ -67,7 +67,8 @@ class AlarmCardRecyclerViewAdapter(private val dataSet: MutableList<Alarm>) :
 
         viewHolder.nameTextView.text = alarm.name
         viewHolder.timeTextView.text = alarm.timeText
-        viewHolder.locationTextView.text = "${alarm.latitude}"
+        //viewHolder.locationTextView.text = "${alarm.latitude}"
+        viewHolder.locationTextView.text = alarm.koreanAddress
         viewHolder.switch.isChecked = alarm.isActive
 
         viewHolder.container.setOnClickListener {
