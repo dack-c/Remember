@@ -77,14 +77,15 @@ class AlarmCardRecyclerViewAdapter(private val dataSet: MutableList<Alarm>) :
         }
 
         viewHolder.switch.setOnCheckedChangeListener { button, isChecked ->
-            println(isChecked)
-            val updatedAlarm = alarm
-            alarm.isActive = isChecked
+            val updatedAlarm = alarm.copy(isActive = isChecked)
+            updatedAlarm.id = alarm.id
 
-            val db = AlarmDatabase.getInstance(viewHolder.context)
             CoroutineScope(Dispatchers.IO).launch {
-                db!!.alarmDao().update(updatedAlarm)
+                val db = AlarmDatabase.getInstance(viewHolder.context)
+                val updatedRows = db!!.alarmDao().update(updatedAlarm)
+                println(updatedRows)
             }
+
         }
     }
 
