@@ -71,7 +71,7 @@ class AlarmCardRecyclerViewAdapter(private val dataSet: MutableList<Alarm>) :
         viewHolder.switch.isChecked = alarm.isActive
 
         viewHolder.container.setOnClickListener {
-            val intent = Intent(viewHolder.context, AlarmActivity::class.java)
+            val intent = Intent(viewHolder.context, AlarmSettingActivity::class.java)
             intent.putExtra("alarm", alarm)
             viewHolder.context.startActivity(intent)
         }
