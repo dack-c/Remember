@@ -1,24 +1,29 @@
-package com.example.myapp
+package com.example.remember
 
-import android.app.AlertDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.CompoundButton
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.SeekBar
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.annotation.RequiresApi
-import com.example.myapp.databinding.ActivityAlarmSettingBinding
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import org.w3c.dom.Text
+import com.example.remember.databinding.ActivityAlarmSettingBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 
 class AlarmSettingActivity : AppCompatActivity() {
     private var hour = 0
@@ -38,6 +43,7 @@ class AlarmSettingActivity : AppCompatActivity() {
         val timeButton = findViewById<ImageButton>(R.id.timeButton)
         val repectDays = findViewById<LinearLayout>(R.id.repectedDays)
         val showDays = findViewById<LinearLayout>(R.id.showDays)
+        val select_Days = findViewById<TextView>(R.id.select_Days)
         val vibrate = findViewById<SwitchCompat>(R.id.vibrate)
 
         // 시간 설정
@@ -55,7 +61,7 @@ class AlarmSettingActivity : AppCompatActivity() {
                 },
                 hour,
                 minute,
-                false
+                true
             )
 
             timePickerDialog.setTitle("시간 설정")
@@ -70,24 +76,25 @@ class AlarmSettingActivity : AppCompatActivity() {
             val selectedDays = BooleanArray(7)
             val daysOfWeek = arrayOf("월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일")
 
-            val builder = AlertDialog.Builder(this)
+            val builder = android.app.AlertDialog.Builder(this)
             builder.setTitle("반복 요일")
-            builder.setMultiChoiceItems(daysOfWeek, selectedDays) { _, which, isChecked ->
+            builder.setMultiChoiceItems(daysOfWeek, selectedDays) { dialog, which, isChecked ->
                 // 선택된 요일 처리
             }
             builder.setPositiveButton("완료") { _, _ ->
                 // 완료 버튼 클릭 시 선택된 요일 처리
-                val selectedDayText =
-                    daysOfWeek.filterIndexed { index, _ -> selectedDays[index] }
-                        .map { it.substringBefore("요일") }
-                        .joinToString()
-                val selectedDaysTextView = TextView(this)
+                val selectedDayText = daysOfWeek.filterIndexed { index, _ -> selectedDays[index] }
+                    .map { it.substringBefore("요일") }
+                    .joinToString()
+                val selectedDaysTextView = select_Days
                 selectedDaysTextView.text = selectedDayText
                 showDays.removeAllViews()
                 showDays.addView(selectedDaysTextView)
             }
             builder.show()
+
         }
+
 
         // 음량 & 진동 조절하기
 
@@ -120,7 +127,6 @@ class AlarmSettingActivity : AppCompatActivity() {
         val intent = Intent(this, NaverMapActivity::class.java)
         binding.locationBtn.setOnClickListener { startActivity(intent) }
 
-        // leaveToggle 버튼을 찾아옵니다.
         val leaveToggle = findViewById<ToggleButton>(R.id.leaveToggle)
         val arriveToggle = findViewById<ToggleButton>(R.id.arriveToggle)
 
@@ -142,6 +148,8 @@ class AlarmSettingActivity : AppCompatActivity() {
                 arriveToggle.setBackgroundResource(R.drawable.button_background_unchecked)
             }
         }
+
+
 
     }
 
@@ -175,7 +183,77 @@ class AlarmSettingActivity : AppCompatActivity() {
         }
     }
 
+
     private fun saveAlarm() {
-        // "저장하기" 버튼을 눌렀을 때 수행할 동작 구현
+        // 이름 가져오기
+        val nameEditText = findViewById<EditText>(R.id.name)
+        val name = nameEditText.text.toString()
+
+        // 시간 가져오기
+        val timeTextView = findViewById<TextView>(R.id.timeTextView)
+        val selectedTimeText = timeTextView.text.toString()
+
+        // 선택된 요일 가져오기
+        val selectedDaysTextView = findViewById<TextView>(R.id.select_Days)
+        Log.d("test: ", "$selectedDaysTextView.text")
+        val selectedDayText = selectedDaysTextView.text.toString()
+        val selectedDaysList = selectedDayText
+            .split(",") // 쉼표로 분할
+            .map {
+                val trimDay = it.trim()
+                val dayInt = when (trimDay) {
+                    "월" -> 0
+                    "화" -> 1
+                    "수" -> 2
+                    "목" -> 3
+                    "금" -> 4
+                    "토" -> 5
+                    else -> 6
+                }
+                dayInt
+            } // 각 부분을 정수로 변환
+
+        // 음량 값 가져오기
+        val volumeSeekBar = findViewById<SeekBar>(R.id.volumeSeekbar)
+        val volume = volumeSeekBar.progress.toDouble()
+
+        // 진동 설정 값 가져오기
+        val vibrateSwitch = findViewById<SwitchCompat>(R.id.vibrate)
+        val isVibrateEnabled = vibrateSwitch.isChecked
+
+        val leaveToggle = findViewById<ToggleButton>(R.id.leaveToggle)
+        val isLeave = leaveToggle.isChecked
+
+        val arriveToggle = findViewById<ToggleButton>(R.id.arriveToggle)
+        val isarrive = arriveToggle.isChecked
+
+        val longitude = 3.0
+        val radius = 2.0
+        val latitude = 1.0
+
+        // 알람 객체 생성
+        val newAlarm = Alarm(
+            name = name,
+            hour = hour,
+            minute = minute,
+            daysOfWeek = selectedDaysList,
+            longitude = longitude,
+            latitude = latitude,
+            radius = radius,
+            fireOnEscape = isLeave,
+            volume = volume,
+            isActive = isVibrateEnabled,
+            alreadyFired = isarrive
+        )
+        Manager.getInstance(this).setAlarm(newAlarm)
+
+        val db = AlarmDatabase.getInstance(applicationContext)
+        CoroutineScope(Dispatchers.IO).launch {
+            db!!.alarmDao().insert(newAlarm)
+        }
+        val intent = Intent(this, AlarmSettingActivity::class.java)
+        startActivity(intent)
+
     }
+
 }
