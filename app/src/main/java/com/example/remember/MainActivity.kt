@@ -104,6 +104,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addAlarm() {
+        val newAlarm = Alarm(
+            //id = 3,
+            name = "alamr",
+            hour = 1,
+            minute = 1,
+                daysOfWeek = listOf(1,2),
+            fireOnEscape = true,
+            longitude = 1.0,
+            latitude = 1.0,
+            volume = 1.0,
+            isActive = true,
+            alreadyFired = true,
+            radius = 4.0
+        )
 //        val newAlarm = Alarm(
 //            name = "일어나7777!!",
 //            hour = 20,
