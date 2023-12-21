@@ -13,12 +13,13 @@ abstract class AlarmDatabase: RoomDatabase() {
 
         @Synchronized
         fun getInstance(context: Context): AlarmDatabase? {
+
             if (instance == null) {
                 synchronized(AlarmDatabase::class){
                     instance = Room.databaseBuilder(
                         context.applicationContext,
                         AlarmDatabase::class.java,
-                        "user-database"
+                        "alarm-database"
                     ).build()
                 }
             }

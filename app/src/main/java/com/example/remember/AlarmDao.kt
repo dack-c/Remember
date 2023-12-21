@@ -9,11 +9,12 @@ interface AlarmDao {
     fun insert(alarm: Alarm)
 
     @Update
-    fun update(alarm: Alarm)
+    fun update(alarm: Alarm): Int
 
     @Delete
     fun delete(alarm: Alarm)
 
     @Query("SELECT * FROM Alarm")
     fun getAll(): LiveData<List<Alarm>>
+
 }

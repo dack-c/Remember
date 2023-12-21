@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -24,19 +25,21 @@
           android:layout_height="30dp"
           android:src="@drawable/ic_clock"/>
       <TextView
-          android:layout_width="wrap_content"
+          android:id="@+id/timeTextView"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
+          android:layout_weight="1"
           android:layout_gravity="center_vertical"
           android:paddingLeft="5dp"
           android:text="시간을 설정하세요"
-          android:textSize="20sp"/>
+          android:textSize="23sp"/>
+
       <ImageButton
           android:id="@+id/timeButton"
           android:layout_width="50dp"
           android:layout_height="50dp"
           android:background="@android:color/transparent"
           android:src="@drawable/ic_angle" />
-
    </LinearLayout>
 
    <!-- 반복 요일 -->
@@ -59,11 +62,17 @@
           android:layout_height="wrap_content"
           android:orientation="horizontal"
           android:layout_weight="1"
-          android:id="@+id/showDays"
-          android:gravity="end">
+          android:gravity="end"
+          android:id="@+id/showDays">
+
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:id="@+id/select_Days"
+             android:text=""/>
+
       </LinearLayout>
    </LinearLayout>
-
 
    <!-- 소리음향, 진동 설정 -->
    <LinearLayout
@@ -86,12 +95,17 @@
           android:layout_height="48dp"
           android:src="@drawable/ic_vibrate" />
 
-      <Switch
+      <androidx.appcompat.widget.SwitchCompat
           android:id="@+id/vibrate"
-          android:layout_width="10dp"
-          android:layout_height="50dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
           android:layout_weight="1"
-          />
+          android:thumb="@drawable/switch_track_thumb"
+          app:track="@drawable/switch_track_selector"
+          app:thumbTextPadding="24dp"
+          app:switchMinWidth="0dp"
+          android:textOn=""
+          android:textOff="" />
    </LinearLayout>
 
    <!-- 위치 설정 -->
@@ -99,14 +113,12 @@
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:orientation="vertical"
-
        android:padding="16dp">
       <LinearLayout
           android:id="@+id/locationLayout"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="horizontal">
-         <!--       android:layout_below="@id/weekdaysLayout">-->
 
          <ImageView
              android:layout_width="35dp"
@@ -127,27 +139,30 @@
              android:layout_height="50dp"
              android:background="@android:color/transparent"
              android:src="@drawable/ic_angle" />
-
       </LinearLayout>
       <LinearLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:orientation="horizontal">
+
          <ToggleButton
              android:id="@+id/leaveToggle"
+             style="?attr/materialButtonOutlinedStyle"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:textOff="벗어날 때"
-             android:textOn="벗어날 때 선택"/>
+             android:textOn="벗어날 때"
+             android:textColor="#000000"/>
          <ToggleButton
              android:id="@+id/arriveToggle"
+             style="?attr/materialButtonOutlinedStyle"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:textOff="들어올 때"
-             android:textOn="들어올 때 선택"/>
+             android:textOn="들어올 때"
+             android:textColor="#000000"/>
 
       </LinearLayout>
-
    </LinearLayout>
 
    <!-- 알람 이름 설정 -->
@@ -156,8 +171,5 @@
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:hint="알람 이름을 입력하세요"
-       android:padding="16dp"
-       android:layout_below="@id/locationLayout"/>
-
-
+       android:padding="16dp"/>
 </LinearLayout>

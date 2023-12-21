@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 버튼이 눌렸을 때 -->
+    <item android:state_pressed="true" android:color="@color/pressed_color" />
+
+    <!-- 버튼이 선택되었을 때 -->
+    <item android:state_selected="true" android:color="@color/selected_color" />
+
+    <!-- 그 외의 상태일 때 -->
+    <item android:color="@color/default_color" />
+
+</selector>
