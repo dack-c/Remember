@@ -238,6 +238,3 @@ class NaverMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 }
 //dialog custom, toolbar custom, 현재위치 오버레이
-
-
-
